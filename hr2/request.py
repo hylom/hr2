@@ -1,7 +1,7 @@
 """Request - HTTP(S) Request"""
 
-import urllib
 from .cookie import Cookies
+from .utils.query_param import QueryParameter
 
 class Request():
     def __init__(self, router, environ):
@@ -19,7 +19,7 @@ class Request():
     @property
     def query(self):
         if not hasattr(self, "_query"):
-            self._query = urllib.parse.parse_qs(self.environ["QUERY_STRING"])
+            self._query = QueryParameter(self.environ["QUERY_STRING"])
         return self._query
 
     @property

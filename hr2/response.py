@@ -60,7 +60,7 @@ class Response():
 
     def renderTemplate(self, template, variables,
                        status_code=200, content_type=None, engine=None):
-        renderer = self.router.get_template_renderer()
+        renderer = self.router.renderer
         content = renderer.render(template, variables, content_type, engine)
 
         content_type = None

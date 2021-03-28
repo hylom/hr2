@@ -9,6 +9,11 @@ class Handler():
         self.req = req
         self.res = res
 
+        # build session
+        self.session = self.app.get_session(req, res)
+        if self.session != None:
+            self.session.restore()
+
         if hasattr(self, "request"):
             self.request(req, res)
             return
@@ -21,11 +26,6 @@ class Handler():
         if not handler:
             res.render(501)
             return
-
-        # build session
-        if hasattr(self._app, 'session_class'):
-            self.session = self._app.session_class(self._app, req, res)
-            self.session.restore()
 
         handler(req, res)
 
