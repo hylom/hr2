@@ -24,7 +24,7 @@ class Cookies(list):
 class Cookie():
     def __init__(self, name, value, domain=None, path=None, same_site=None,
                  expires=None, host_only=None, http_only=None,
-                 max_age=None, secure = None):
+                 max_age=None, secure=None):
         self.name = name
         self.value = value
         self.domain = domain
@@ -51,20 +51,20 @@ class Cookie():
 
         items.append("{}={}".format(self.name, urllib.parse.quote(v)))
 
-        if self.expires is not None:
+        if self.expires:
             date_str = dt.strftime("%a, %d %b %Y %H:%M:%S %Z")
             items.append("Expires={}".format(date_str))
-        if self.domain is not None:
+        if self.domain:
             items.append("Domain={}".format(self.domain))
-        if self.path is not None:
+        if self.path:
             items.append("Path={}".format(self.path))
-        if self.secure is not None:
+        if self.secure:
             items.append("Secure")
-        if self.http_only is not None:
+        if self.http_only:
             items.append("HttpOnly")
-        if self.same_site is not None:
+        if self.same_site:
             items.append("SameSite={}".format(self.same_site))
-        if self.max_age is not None:
+        if self.max_age != None:
             items.append("Max-Age={}".format(self.max_age))
 
         return "; ".join(items)

@@ -1,4 +1,6 @@
 import sys
+import os
+from datetime import datetime
 
 LOG_LEVEL = {
     "debug": 10,
@@ -10,12 +12,31 @@ LOG_LEVEL = {
 
 class Logger():
     def __init__(self):
-        self.verbosity = 10
+        self._verbosity = 40 # default value
+        debug_level = os.environ.get("DEBUG")
+        if debug_level:
+            if debug_level.lower() in LOG_LEVEL:
+                self._verbosity = LOG_LEVEL[debug_level.lower()]
+            else:
+                try:
+                    self._verbosity = int(debug_level)
+                except ValueError as e:
+                    raise self.InvalidLogLevel(debug_level) from e
+
+    def set_level(self, level):
+        if isinstance(level, int):
+            self._verbosity = level
+            return
+        lv = LOG_LEVEL.get(level)
+        if level is None:
+            raise self.InvalidLogLevel(level)
+        self._verbosity = lv
 
     def log(self, log_level, *args):
-        if log_level < self.verbosity:
+        if log_level < self._verbosity:
             return
-        print(*args, file=sys.stderr)
+        ts = "[%s]" % datetime.now().isoformat()
+        print(ts, *args, file=sys.stderr)
 
     def debug(self, *args):
         self.log(10, "[debug]", *args)
@@ -32,4 +53,5 @@ class Logger():
     def fatal(self, *args):
         self.log(50, "[fatal]", *args)
 
-        
+    class InvalidLogLevel(Exception):
+        pass

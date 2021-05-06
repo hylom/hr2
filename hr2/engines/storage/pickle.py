@@ -14,10 +14,14 @@ class Storage():
         return self.storage[key]
 
     def __setitem__(self, key, value):
+        if not self.opened:
+            self.load()
         self.storage[key] = value
         self.save()
 
     def __delitem__(self, key):
+        if not self.opened:
+            self.load()
         del self.storage[key]
         self.save()
 
