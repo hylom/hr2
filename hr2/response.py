@@ -88,7 +88,7 @@ class Response():
         :param status_code: status code
         :return: self
         """
-        self._status_code = HTTPStatus(_status_code)
+        self._status_code = HTTPStatus(status_code)
         self.headers = [('Location', url)]
         return self
 
