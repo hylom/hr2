@@ -9,6 +9,8 @@ __author__ = "Hiromichi Matsushima <hylom@hylom.net>"
 
 import re
 import os.path
+import inspect
+from pathlib import Path
 
 from .handler import Handler
 from .request import Request
@@ -116,6 +118,12 @@ class Router(SubRouter):
         return Template(self.engine['template'],
                         self.template_dirs,
                         self.get_default_engine("template"))
+
+    @property
+    def base_path(self):
+        """This property holds directory which the main module in.
+        """
+        return Path(inspect.getfile(self.__class__)).parent
 
     def get_session(self, req, res):
         """Returns current session.
