@@ -1,11 +1,37 @@
 import re
 
+TRIGGERS = [
+    "after_dispatch",
+    "before_dispatch",
+]
+
 class SubRouter():
     def __init__(self, app):
         self._app = app
         # routes format is: (rex, handler, method, replace, kwargs)
         self._routes = []
+        self._actions = {}
         pass
+
+    def add_action(self, trigger, handler):
+        """Add action handler for given trigger
+        
+        :param string trigger: trigger to add handler
+        :param handler: handler to add
+        """
+        if trigger not in TRIGGERS:
+            raise InvalidActionTrigger
+        handlers = self._actions.get(trigger)
+        if handlers:
+            handlers.append(handler)
+        else:
+            self._actions[trigger] = [handler,]
+
+    def _run_action(self, trigger, handler, req, res):
+        if trigger not in TRIGGERS:
+            raise InvalidActionTrigger
+        for action in self._actions.get(trigger, []):
+            action(handler, req, res)
 
     def add_route(self, rex, handler, method=None, replace=None, **kwargs):
         self._routes.append((rex, handler, method, replace, kwargs))
@@ -43,4 +69,7 @@ class SubRouter():
             req.path = new_path
 
         self._app.log.debug("dipatch to {}: {} {}".format(handler, req.method, req.path))
+
+        self._run_action("before_dispatch", handler, req, res)
         handler.dispatch(req, res)
+        self._run_action("after_dispatch", handler, req, res)

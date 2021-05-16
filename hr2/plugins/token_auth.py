@@ -8,7 +8,7 @@ class TokenAuth():
             self.app.log.error("TokenAuth: no token_header given!")
             
         app.add_action('before_dispatch',
-                       lambda req, res: self.token_auth(req, res))
+                       lambda handler, req, res: self.token_auth(req, res))
 
     @property
     def app(self):

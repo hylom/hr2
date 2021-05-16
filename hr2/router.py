@@ -33,10 +33,6 @@ class FaviconHandler(Handler):
     def get(self, req, res):
         res.send_file("resources/favicon/favicon.ico")
 
-TRIGGERS = [
-    "after_dispatch",
-    "before_dispatch",
-]
 
 class Router(SubRouter):
     """This class provieds HTTP(S) router.
@@ -86,9 +82,9 @@ class Router(SubRouter):
         req = Request(self, environ)
         res = Response(self, start_response)
 
-        self._run_action("before_dispatch", req, res)
+        self._run_action("before_dispatch", self, req, res)
         self.dispatch(req, res)
-        self._run_action("after_dispatch", req, res)
+        self._run_action("after_dispatch", self, req, res)
 
         if not res._finished:
             res.end()
@@ -177,27 +173,6 @@ class Router(SubRouter):
         """
         self.add_engine(engine_type, engine)
         self.set_default_engine(engine_type, engine.name)
-
-    def add_action(self, trigger, handler):
-        """Add action handler for given trigger
-        
-        :param string trigger: trigger to add handler
-        :param handler: handler to add
-        """
-        if trigger not in TRIGGERS:
-            raise InvalidActionTrigger
-        handlers = self._actions.get(trigger)
-        if handlers:
-            handlers.append(handler)
-        else:
-            self._actions[trigger] = [handler,]
-
-    def _run_action(self, trigger, req, res):
-        if trigger not in TRIGGERS:
-            raise InvalidActionTrigger
-        for action in self._actions.get(trigger, []):
-            action(req, res)
-        
 
     def add_plugin(self, plugin_class, **kwargs):
         """Add plugin
