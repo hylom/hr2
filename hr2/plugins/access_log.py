@@ -6,7 +6,7 @@ class AccessLog():
     def __init__(self):
         pass
 
-    def register(self, app):
+    def register(self, app, kwargs={}):
         app.add_action('after_dispatch',  lambda req, res: self.log(req, res))
 
     def log(self, req, res):
