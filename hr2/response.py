@@ -167,7 +167,7 @@ class Response():
         (mimetype, enc)  = mimetypes.guess_type(filepath)
         mode = "rb"
 
-        if mimetype.find("text") == 0:
+        if mimetype and mimetype.find("text") == 0:
             mode = "r"
             mimetype = mimetype + "; charset=utf-8"
 
