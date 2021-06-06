@@ -1,25 +1,41 @@
 import json
+import os
+from .base import StorageBase
 
-class Storage():
+class Storage(StorageBase):
     name = "json"
+    has_transaction = False
     
     def __init__(self, filepath):
         self.filepath = filepath
         self.storage = {}
         self.opened = False
 
-    def __getitem__(self, key):
+    def _iter(self):
+        if not self.opened:
+            self.load()
+        return iter(self.storage)
+
+    def _get(self, key):
         if not self.opened:
             self.load()
         return self.storage[key]
 
-    def __setitem__(self, key, value):
+    def _set(self, key, value):
         self.storage[key] = value
         self.save()
 
-    def __delitem__(self, key):
+    def _del(self, key):
         del self.storage[key]
         self.save()
+
+    def _clear(self):
+        self.opened = False
+        self.storage = {}
+        try:
+            os.unlink(self.filepath)
+        except FileNotFoundError:
+            pass
 
     def load(self):
         with open(self.filepath, 'r') as fp:
