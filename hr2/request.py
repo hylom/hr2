@@ -8,6 +8,7 @@ __all__ = ["Request"]
 __author__ = "Hiromichi Matsushima <hylom@hylom.net>"
 
 import json
+import urllib.parse
 
 from .cookie import Cookies
 from .utils.query_param import QueryParameter
@@ -132,6 +133,20 @@ class Request():
         return json.loads(self.body)
 
     @property
+    def form(self):
+        """This property holds request body as Python dict.
+           This property is valid only when content-type is ``application/x-www-form-urlencoded``.
+           Otherwise, raises
+           :class:`hr2.Request.ContentTypeIsNotUrlEncodedForm` exception.
+        """
+        if self.content_type != "application/x-www-form-urlencoded":
+            raise this.ContentTypeIsNotUrlEncodedForm(self.content_type)
+
+        body = self.body.decode("utf-8")
+        form_items = urllib.parse.parse_qsl(body)
+        return form_items
+
+    @property
     def body(self):
         """This property holds request body as `bytes`.
         """
@@ -157,5 +172,10 @@ class Request():
 
     class ContentTypeIsNotJson(Exception):
         """This exception is raised when access Request.json property and the request's content-type is not ``application/json``.
+        """
+        pass
+
+    class ContentTypeIsNotUrlEncodedForm(Exception):
+        """This exception is raised when access Request.form property and the request's content-type is not ``application/x-www-form-urlencoded``.
         """
         pass
