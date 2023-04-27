@@ -22,10 +22,14 @@ class Storage(StorageBase):
         return self.storage[key]
 
     def _set(self, key, value):
+        if not self.opened:
+            self.load()
         self.storage[key] = value
         self.save()
 
     def _del(self, key):
+        if not self.opened:
+            self.load()
         del self.storage[key]
         self.save()
 
