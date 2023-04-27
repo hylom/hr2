@@ -38,8 +38,11 @@ class Storage(StorageBase):
             pass
 
     def load(self):
-        with open(self.filepath, 'r') as fp:
-            self.storage = json.load(fp)
+        try:
+            with open(self.filepath, 'r') as fp:
+                self.storage = json.load(fp)
+        except FileNotFoundError:
+            self.storage = {}
         self.opened = True
     
     def save(self):
